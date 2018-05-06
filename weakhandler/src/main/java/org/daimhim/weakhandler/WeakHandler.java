@@ -34,14 +34,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Memory safer implementation of android.os.Handler
- * <p/>
  * Original implementation of Handlers always keeps hard reference to handler in queue of execution.
  * If you create anonymous handler and post delayed message into it, it will keep all parent class
  * for that time in memory even if it could be cleaned.
- * <p/>
  * This implementation is trickier, it will keep WeakReferences to runnables and messages,
  * and GC could collect them once WeakHandler instance is not referenced any more
- * <p/>
  *
  * @see android.os.Handler
  *

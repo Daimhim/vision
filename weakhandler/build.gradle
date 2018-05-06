@@ -34,11 +34,11 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //项目主页
-def siteUrl = 'https://github.com/Daimhim/RVDecoration'    // project homepage
+def siteUrl = 'https://github.com/Daimhim/vision/tree/master/weakhandler'    // project homepage
 //项目的版本控制地址
-def gitUrl = 'https://github.com/Daimhim/RVDecoration.git' // project git
+def gitUrl = 'https://github.com/Daimhim/vision.git' // project git
 //项目讨论区
-def gitissues = 'https://github.com/Daimhim/RVDecoration/issues' // project issues
+def gitissues = 'https://github.com/Daimhim/vision/issues' // project issues
 //包名
 group = "org.daimhim.weakhandler"
 //仓库名
@@ -90,7 +90,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name "RecyclerView holp class，specification its adapater"
+                name "WeakHandler asyn help"
                 url siteUrl
                 licenses {
                     license {
@@ -125,7 +125,7 @@ bintray {
     pkg {
         repo = maven_repo
         name = libName    //发布到JCenter上的项目名字，必须填写
-        desc =  "WeakHandler,工具"   //项目描述
+        desc =  "WeakHandler tools"   //项目描述
         websiteUrl = siteUrl
         issueTrackerUrl = gitissues
         vcsUrl = gitUrl
