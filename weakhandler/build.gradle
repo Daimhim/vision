@@ -62,7 +62,7 @@ task javadoc(type: Javadoc) {
     options.charSet 'UTF-8'
     options.author true
     options.version true
-    options.links "https://github.com/Daimhim/RVDecoration/tree/master/rvadapter/docs/javadoc"
+    options.links "https://github.com/Daimhim/vision/tree/master/weakhandler/docs/javadoc"
     failOnError false
 }
 
