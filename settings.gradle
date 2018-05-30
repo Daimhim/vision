@@ -1,1 +1,1 @@
-include ':app', ':weakhandler'
+include ':app', ':weakhandler', ':onekeypayment'
