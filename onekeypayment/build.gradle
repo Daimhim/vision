@@ -24,15 +24,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //微信支付
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
     //支付宝支付
-    implementation files('libs/alipaySdk-20180403.jar')
+    api files('libs/alipaySdk-20180403.jar')
 }
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
 
@@ -40,7 +38,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //项目主页
-def siteUrl = 'https://github.com/Daimhim/vision/tree/master/weakhandler'    // project homepage
+def siteUrl = 'https://github.com/Daimhim/vision/tree/master/onekeypayment'    // project homepage
 //项目的版本控制地址
 def gitUrl = 'https://github.com/Daimhim/vision.git' // project git
 //项目讨论区
@@ -52,7 +50,7 @@ def maven_repo = "widget"
 //发布到JCenter上的项目名字，必须填写
 def libName = "oneKeyPayment"            //依赖名
 // 版本号，下次更新是只需要更改版本号即可
-version = rootProject.ext.WEAKHANDLER_VERSIONNAME
+version = rootProject.ext.ONE_KEY_PAYMENT_VERSIONNAME
 /**  上面配置后上传至jcenter后的编译路径是这样的： compile 'org.daimhim.rvdecoration:rvadapter:1.0.0'  **/
 
 //生成源文件
@@ -68,7 +66,7 @@ task javadoc(type: Javadoc) {
     options.charSet 'UTF-8'
     options.author true
     options.version true
-    options.links "https://github.com/Daimhim/vision/tree/master/weakhandler/docs/javadoc"
+    options.links "https://github.com/Daimhim/vision/tree/master/onekeypayment/docs/javadoc"
     failOnError false
 }
 

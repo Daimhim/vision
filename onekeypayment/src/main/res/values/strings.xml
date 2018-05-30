@@ -1,3 +1,5 @@
 <resources>
 	<string name="app_name">onekeypayment</string>
+	<string name="unknown_mistake">未知错误</string>
+	<string name="wx_not_installed">您尚未安装微信，请选择其他支付方式</string>
 </resources>
