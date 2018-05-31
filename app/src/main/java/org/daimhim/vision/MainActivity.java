@@ -29,14 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ToPay lToPay = new ToPay();
         WxPayParameter lPayParameter = new WxPayParameter();
-        String json = "{\"appid\":\"wxb4ba3c02aa476ea1\",\"partnerid\":\"1900006771\",\"package\":\"Sign=WXPay\",\"noncestr\":\"42a782eab96d255f4a39a4201fa1c83d\",\"timestamp\":1527750648,\"prepayid\":\"wx3115104846006489528e9bf70766136291\",\"sign\":\"86F0C0A3EBE4488AD9A6F5476A97E45D\"}";
-        lPayParameter.setAppId("wxb4ba3c02aa476ea1");
-        lPayParameter.setPartnerId("1900006771");
-        lPayParameter.setPackageValue("Sign=WXPay");
-        lPayParameter.setNonceStr("42a782eab96d255f4a39a4201fa1c83d");
-        lPayParameter.setTimeStamp("1527750648");
-        lPayParameter.setPrepayId("wx3115104846006489528e9bf70766136291");
-        lPayParameter.setPaySign("86F0C0A3EBE4488AD9A6F5476A97E45D");
         PaymentRequest lPaymentRequest = new PaymentRequest(lPayParameter);
         lPaymentRequest.setPayType(PaymentConst.WX_PAY);
         lToPay.toPayment(this, lPaymentRequest,this);

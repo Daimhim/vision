@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Xml;
 
 import com.alipay.sdk.app.PayTask;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -16,16 +15,12 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.daimhim.onekeypayment.model.AlPayParameter;
-import org.daimhim.onekeypayment.model.PayParameter;
 import org.daimhim.onekeypayment.model.PaymentReponse;
 import org.daimhim.onekeypayment.model.PaymentRequest;
 import org.daimhim.onekeypayment.model.WxPayParameter;
-import org.xmlpull.v1.XmlPullParser;
 
-import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.security.MessageDigest;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -73,6 +68,9 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         try {
             lReponse = new PaymentReponse();
             PaymentRequest lPaymentRequest = pPaymentRequests[0];
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, lPaymentRequest.toString());
+            }
             switch (lPaymentRequest.getPayType()) {
                 case AL_PAY:
                     //支付宝
@@ -88,7 +86,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 case WX_PAY:
                     //微信
                     WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
-                    Log.d(TAG,lPayParameter.toString());
                     IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity,  lPayParameter.getAppId(), true);
                     if (lWXAPI.isWXAppInstalled()) {
                         PayReq req = new PayReq();
@@ -257,6 +254,12 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         }
     }
 
+    /**
+     * 用于编成支付宝 需要的参数
+     * @param pClass 外面传入的参数
+     * @return 返回值
+     * @throws IllegalAccessException 反射失败
+     */
     private String alPayParameter(AlPayParameter pClass) throws IllegalAccessException {
         Field[] lDeclaredFields = pClass.getClass().getDeclaredFields();
         StringBuilder lStringBuilder = new StringBuilder();
