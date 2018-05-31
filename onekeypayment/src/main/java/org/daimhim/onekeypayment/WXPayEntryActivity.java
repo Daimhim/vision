@@ -2,6 +2,7 @@ package org.daimhim.onekeypayment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
@@ -17,9 +18,11 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
  * @author：Daimhim
  */
 public class WXPayEntryActivity extends Activity {
+    String TAG = getClass().getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG,"WXPayEntryActivity");
         WXAPIFactory.createWXAPI(this, PaymentConst.WX_APP_ID).handleIntent(getIntent(), Paymenting.sIWXAPIEventHandler);
         finish();
     }

@@ -15,11 +15,15 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import org.daimhim.onekeypayment.model.AlPayParameter;
+import org.daimhim.onekeypayment.model.PayParameter;
 import org.daimhim.onekeypayment.model.PaymentReponse;
 import org.daimhim.onekeypayment.model.PaymentRequest;
+import org.daimhim.onekeypayment.model.WxPayParameter;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,6 +52,7 @@ import static org.daimhim.onekeypayment.PaymentConst.WX_PAY;
  * Result是指doInBackground()的返回值类型
  */
 class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
+    String TAG  = getClass().getSimpleName();
     /**
      * 微信回调接口
      */
@@ -63,7 +68,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     }
 
     @Override
-    protected PaymentReponse doInBackground(PaymentRequest... pPaymentRequests) {
+    protected synchronized PaymentReponse doInBackground(PaymentRequest... pPaymentRequests) {
         PaymentReponse lReponse = null;
         try {
             lReponse = new PaymentReponse();
@@ -71,7 +76,8 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
             switch (lPaymentRequest.getPayType()) {
                 case AL_PAY:
                     //支付宝
-                    String lPay = new PayTask(mActivity).pay(lPaymentRequest.getSigninfo(), true);
+                    AlPayParameter lPayParameter1 = (AlPayParameter) lPaymentRequest.getPayParameter();
+                    String lPay = new PayTask(mActivity).pay(alPayParameter(lPayParameter1), true);
                     if (TextUtils.isEmpty(lPay)) {
                         lReponse.setErrorMessage(mActivity.getString(R.string.unknown_mistake));
                         lReponse.setPayStatus(PAY_UNKNOWN_MISTAKE);
@@ -81,28 +87,38 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     break;
                 case WX_PAY:
                     //微信
-                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity, PaymentConst.WX_APP_ID, true);
+                    WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
+                    Log.d(TAG,lPayParameter.toString());
+                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity,  lPayParameter.getAppId(), true);
                     if (lWXAPI.isWXAppInstalled()) {
-                        Map<String, String> stringMap = decodeXml(lPaymentRequest.getSigninfo());
                         PayReq req = new PayReq();
-                        req.appId = PaymentConst.WX_APP_ID;
-                        req.partnerId = PaymentConst.WX_MCH_ID;
-                        //预支付交易会话ID
-                        req.prepayId = stringMap.get("prepay_id");
-                        req.packageValue = "Sign=WXPay";
-                        req.nonceStr = stringMap.get("nonce_str");
-                        req.timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
-                        MD5 md5 = new MD5();
-                        md5.put("appid", req.appId);
-                        md5.put("noncestr", req.nonceStr);
-                        md5.put("package", req.packageValue);
-                        md5.put("partnerid", req.partnerId);
-                        md5.put("prepayid", req.prepayId);
-                        md5.put("timestamp", req.timeStamp);
-                        req.sign = md5.getMessageDigest(md5.toString().getBytes()).toUpperCase(Locale.CHINA);
+                        PaymentConst.WX_APP_ID = lPayParameter.getAppId();
+                        req.appId = lPayParameter.getAppId();
+                        req.partnerId = lPayParameter.getPartnerId();
+                        req.prepayId = lPayParameter.getPrepayId();
+                        req.packageValue = lPayParameter.getPackageValue();
+                        req.nonceStr = lPayParameter.getNonceStr();
+                        req.timeStamp = TextUtils.isEmpty(lPayParameter.getTimeStamp())?
+                                String.valueOf(System.currentTimeMillis() / 1000):lPayParameter.getTimeStamp();
+                        //如果后台不返回则自行加密
+                        if (TextUtils.isEmpty(lPayParameter.getPaySign())) {
+                            MD5 md5 = new MD5();
+                            md5.put("appid", req.appId);
+                            md5.put("partnerid", req.partnerId);
+                            md5.put("prepayid", req.prepayId);
+                            md5.put("package", req.packageValue);
+                            md5.put("noncestr", req.nonceStr);
+                            md5.put("timestamp", req.timeStamp);
+                            md5.put("key", lPayParameter.getApikey());
+                            req.sign = md5.getMessageDigest(md5.toString().getBytes()).toUpperCase(Locale.CHINA);
+                        }else {
+                            req.sign = lPayParameter.getPaySign();
+                        }
                         lWXAPI.sendReq(req);
                         sIWXAPIEventHandler = new PayIWXAPIEventHandler();
-                        wait();
+                        while (!sIWXAPIEventHandler.isRun) {
+                            wait(1000);
+                        }
                         BaseResp lBaseResp = sIWXAPIEventHandler.getBaseResp();
                         if (null != lBaseResp) {
                             lReponse.setResult(String.format("%s", lBaseResp.errCode));
@@ -160,6 +176,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     private void recycling() {
         mActivity = null;
         sIWXAPIEventHandler = null;
+        PaymentConst.WX_APP_ID = null;
     }
 
     /**
@@ -173,9 +190,8 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     }
 
     class PayIWXAPIEventHandler implements IWXAPIEventHandler {
-
+        boolean isRun = false;
         private BaseResp mBaseResp;
-
         @Override
         public void onReq(BaseReq pBaseReq) {
 
@@ -184,7 +200,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         @Override
         public void onResp(BaseResp pBaseResp) {
             mBaseResp = pBaseResp;
-            notify();
+            isRun = true;
         }
 
         public BaseResp getBaseResp() {
@@ -192,40 +208,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         }
     }
 
-    private Map<String, String> decodeXml(String content) {
-        try {
-            Map<String, String> xml = new HashMap<>(10);
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(new StringReader(content));
-            int event = parser.getEventType();
-            while (event != XmlPullParser.END_DOCUMENT) {
-
-                String nodeName = parser.getName();
-                switch (event) {
-                    case XmlPullParser.START_DOCUMENT:
-
-                        break;
-                    case XmlPullParser.START_TAG:
-
-                        if (!"xml".equals(nodeName)) {
-                            // 实例化student对象
-                            xml.put(nodeName, parser.nextText());
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        break;
-                    default:
-                        break;
-                }
-                event = parser.next();
-            }
-
-            return xml;
-        } catch (Exception e) {
-            Log.e("orion-e--->", e.toString());
-        }
-        return null;
-    }
 
     public class MD5 {
 
@@ -271,9 +253,23 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 builder.append(entry.getValue());
                 builder.append("&");
             }
-            builder.append("key=");
-            builder.append(PaymentConst.WX_API_KEY);
             return builder.toString();
         }
+    }
+
+    private String alPayParameter(AlPayParameter pClass) throws IllegalAccessException {
+        Field[] lDeclaredFields = pClass.getClass().getDeclaredFields();
+        StringBuilder lStringBuilder = new StringBuilder();
+        for (Field field :
+                lDeclaredFields) {
+            field.setAccessible(true);
+            lStringBuilder.append(field.getName())
+                    .append("=")
+                    .append((String)field.get(pClass))
+                    .append("&");
+        }
+        //删除最后一个
+        lStringBuilder.deleteCharAt(lStringBuilder.length()-1);
+        return lStringBuilder.toString();
     }
 }

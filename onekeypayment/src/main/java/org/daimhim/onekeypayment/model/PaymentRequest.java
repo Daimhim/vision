@@ -34,9 +34,13 @@ public class PaymentRequest {
      */
     private int payType;
     /**
-     * sign
+     * 支付参数
      */
-    private String signinfo;
+    private PayParameter mPayParameter;
+
+    public PaymentRequest(PayParameter pPayParameter) {
+        mPayParameter = pPayParameter;
+    }
 
     @Override
     public String toString() {
@@ -46,7 +50,7 @@ public class PaymentRequest {
                 ", account='" + account + '\'' +
                 ", dealPrice='" + dealPrice + '\'' +
                 ", payType=" + payType +
-                ", signinfo='" + signinfo + '\'' +
+                ", mPayParameter=" + mPayParameter +
                 '}';
     }
 
@@ -90,11 +94,11 @@ public class PaymentRequest {
         payType = pPayType;
     }
 
-    public String getSigninfo() {
-        return signinfo;
+    public PayParameter getPayParameter() {
+        return mPayParameter;
     }
 
-    public void setSigninfo(String pSigninfo) {
-        signinfo = pSigninfo;
+    public void setPayParameter(PayParameter pPayParameter) {
+        mPayParameter = pPayParameter;
     }
 }

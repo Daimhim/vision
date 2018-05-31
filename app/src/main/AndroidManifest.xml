@@ -35,7 +35,13 @@
 		<activity-alias
 			android:name=".wxapi.WXPayEntryActivity"
 			android:exported="true"
-			android:targetActivity="org.daimhim.onekeypayment.WXPayEntryActivity" />
+			android:targetActivity="org.daimhim.onekeypayment.WXPayEntryActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:scheme="wxb4ba3c02aa476ea1"/>
+			</intent-filter>
+		</activity-alias>
 	</application>
 
 </manifest>
