@@ -20,6 +20,7 @@ public class AlPayParameter extends PayParameter {
     private String timestamp;
     private String version;
     private String sign;
+    private String signInfo;
 
     public String getApp_id() {
         return app_id;
@@ -85,6 +86,14 @@ public class AlPayParameter extends PayParameter {
         sign = pSign;
     }
 
+    public String getSignInfo() {
+        return signInfo;
+    }
+
+    public void setSignInfo(String pSignInfo) {
+        signInfo = pSignInfo;
+    }
+
     @Override
     public String toString() {
         return "AlPayParameter{" +
@@ -96,6 +105,7 @@ public class AlPayParameter extends PayParameter {
                 ", timestamp='" + timestamp + '\'' +
                 ", version='" + version + '\'' +
                 ", sign='" + sign + '\'' +
+                ", signInfo='" + signInfo + '\'' +
                 '}';
     }
 }

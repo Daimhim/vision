@@ -75,7 +75,12 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 case AL_PAY:
                     //支付宝
                     AlPayParameter lPayParameter1 = (AlPayParameter) lPaymentRequest.getPayParameter();
-                    String lPay = new PayTask(mActivity).pay(alPayParameter(lPayParameter1), true);
+                    String lPay = null;
+                    if (TextUtils.isEmpty(lPayParameter1.getSignInfo())) {
+                        lPay = new PayTask(mActivity).pay(alPayParameter(lPayParameter1), true);
+                    }else {
+                        lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
+                    }
                     if (TextUtils.isEmpty(lPay)) {
                         lReponse.setErrorMessage(mActivity.getString(R.string.unknown_mistake));
                         lReponse.setPayStatus(PAY_UNKNOWN_MISTAKE);
@@ -266,10 +271,12 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         for (Field field :
                 lDeclaredFields) {
             field.setAccessible(true);
-            lStringBuilder.append(field.getName())
-                    .append("=")
-                    .append((String)field.get(pClass))
-                    .append("&");
+            if (!"signInfo".equals(field.getName())) {
+                lStringBuilder.append(field.getName())
+                        .append("=")
+                        .append((String) field.get(pClass))
+                        .append("&");
+            }
         }
         //删除最后一个
         lStringBuilder.deleteCharAt(lStringBuilder.length()-1);
