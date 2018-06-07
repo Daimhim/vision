@@ -44,6 +44,9 @@ ext{
 
     ZXING_VERSIONCODE = 100
     ZXING_VERSIONNAME = "1.0.0"
+
+    CROPPICTURE_VERSIONCODE = 100
+    CROPPICTURE_VERSIONNAME = "1.0.0"
 }
 
 task clean(type: Delete) {
