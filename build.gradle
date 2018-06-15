@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://dl.bintray.com/daimhim/widget' }
     }
     dependencies {
@@ -21,6 +22,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://dl.bintray.com/daimhim/widget' }
     }
 }
@@ -39,8 +41,8 @@ ext{
     WEAKHANDLER_VERSIONCODE = 100
     WEAKHANDLER_VERSIONNAME = "1.0.0"
 
-    ONE_KEY_PAYMENT_VERSIONCODE = 102
-    ONE_KEY_PAYMENT_VERSIONNAME = "1.0.2"
+    ONE_KEY_PAYMENT_VERSIONCODE = 103
+    ONE_KEY_PAYMENT_VERSIONNAME = "1.0.3"
 
     ZXING_VERSIONCODE = 100
     ZXING_VERSIONNAME = "1.0.0"

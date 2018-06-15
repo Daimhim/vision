@@ -92,6 +92,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     //微信
                     WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
                     IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity,  lPayParameter.getAppId(), true);
+                    lWXAPI.registerApp(lPayParameter.getAppId());
                     if (lWXAPI.isWXAppInstalled()) {
                         PayReq req = new PayReq();
                         PaymentConst.WX_APP_ID = lPayParameter.getAppId();
