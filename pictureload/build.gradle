@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-
-
+    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
+    buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.MIN_SDK_VERSION
+        targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
+        versionCode rootProject.ext.PICTURELOAD_VERSIONCODE
+        versionName rootProject.ext.PICTURELOAD_VERSIONNAME
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -32,7 +31,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     implementation rootProject.ext.dependencies.libGlide
-    implementation rootProject.ext.dependencies.libGlideCompiler
+    annotationProcessor rootProject.ext.dependencies.libGlideCompiler
 }
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
 
@@ -40,7 +39,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //项目主页
-def siteUrl = 'https://github.com/Daimhim/vision/tree/master/weakhandler'    // project homepage
+def siteUrl = 'https://github.com/Daimhim/vision/tree/master/pictureload'    // project homepage
 //项目的版本控制地址
 def gitUrl = 'https://github.com/Daimhim/vision.git' // project git
 //项目讨论区
@@ -50,7 +49,7 @@ group = "org.daimhim.weakhandler"
 //仓库名
 def maven_repo = "widget"
 //发布到JCenter上的项目名字，必须填写
-def libName = "weakhandler"            //依赖名
+def libName = "pictureload"            //依赖名
 // 版本号，下次更新是只需要更改版本号即可
 version = rootProject.ext.WEAKHANDLER_VERSIONNAME
 /**  上面配置后上传至jcenter后的编译路径是这样的： compile 'org.daimhim.rvdecoration:rvadapter:1.0.0'  **/
@@ -68,7 +67,7 @@ task javadoc(type: Javadoc) {
     options.charSet 'UTF-8'
     options.author true
     options.version true
-    options.links "https://github.com/Daimhim/vision/tree/master/weakhandler/docs/javadoc"
+    options.links "https://github.com/Daimhim/vision/tree/master/pictureload/docs/javadoc"
     failOnError false
 }
 
@@ -99,7 +98,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name "WeakHandler asyn help"
+                name "ImgLoading Util"
                 url siteUrl
                 licenses {
                     license {
