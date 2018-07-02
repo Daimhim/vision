@@ -6,6 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.daimhim.vision"
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.MIN_SDK_VERSION
         targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
         versionCode rootProject.ext.APP_VERSIONCODE
@@ -19,7 +20,11 @@ android {
         }
     }
 }
-
+configurations.all {
+    resolutionStrategy {
+        force "com.android.support:appcompat-v7:$rootProject.ext.LIB_VERSION"
+    }
+}
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$rootProject.ext.LIB_VERSION"
@@ -28,5 +33,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'org.daimhim.weakhandler:weakhandler:1.0.0'
+    implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
+    implementation 'net.meyki.library:viewlibrary:1.0.0'
+    implementation 'net.meyki.modules:msgmodules:1.0.1'
     implementation project(':onekeypayment')
+    implementation project(':croppicture')
+    implementation rootProject.ext.dependencies.libSmartRefreshLayout
+    implementation rootProject.ext.dependencies.libButterKnife
+    annotationProcessor rootProject.ext.dependencies.libButterknifeCompiler
+    implementation project(':errorcollection')
 }

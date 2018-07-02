@@ -1,0 +1,13 @@
+<animated-vector
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:drawable="@drawable/line">
+	<target
+		android:name="path1"
+		android:animation="@animator/path1">
+	</target>
+	
+	<target
+		android:name="path2"
+		android:animation="@animator/path2">
+	</target>
+</animated-vector>

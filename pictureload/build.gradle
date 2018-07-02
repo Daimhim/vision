@@ -45,7 +45,7 @@ def gitUrl = 'https://github.com/Daimhim/vision.git' // project git
 //项目讨论区
 def gitissues = 'https://github.com/Daimhim/vision/issues' // project issues
 //包名
-group = "org.daimhim.weakhandler"
+group = "org.daimhim.pictureload"
 //仓库名
 def maven_repo = "widget"
 //发布到JCenter上的项目名字，必须填写
