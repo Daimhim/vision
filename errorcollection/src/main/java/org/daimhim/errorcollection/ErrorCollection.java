@@ -1,5 +1,6 @@
 package org.daimhim.errorcollection;
 
+import android.app.AlarmManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.xml.transform.ErrorListener;
+
 /**
  * 项目名称：org.daimhim.errorcollection
  * 项目版本：vision
@@ -33,11 +36,16 @@ import java.util.Map;
  * @author：Daimhim
  */
 public class ErrorCollection implements Thread.UncaughtExceptionHandler {
-    private Application mApplication;
-
+    private Config mConfig;
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        saveErrorMessages(t,e,mApplication);
+        if (null!=mConfig.listener) {
+            mConfig.listener.errorBefore(t, e);
+        }
+        String lS = saveErrorMessages(t, e);
+        if (null!=mConfig.listener){
+            mConfig.listener.errorAfter(lS);
+        }
         Log.d("TAG:ErrorCollection", getTrace(e));
     }
 
@@ -52,8 +60,14 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         return SingletonHolder.INSTANCE;
     }
 
-    public void init(Application pApplication) {
-        mApplication = pApplication;
+    public void init(Application pApplication,Config config) {
+        if (null == config){
+            config = new Config();
+        }
+        //初始化log保存日志
+        if (TextUtils.isEmpty(config.cachePath)) {
+            config.cachePath = getSystemFilePath(pApplication) + "/crash/";
+        }
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
@@ -62,10 +76,10 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
      *
      * @param e Throwable
      */
-    private void saveErrorMessages(Thread t,Throwable e, Context pContext) {
+    private String saveErrorMessages(Thread t,Throwable e) {
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
         String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
-        String lSystemFilePath = getSystemFilePath(pContext) + "/crash/";
+        String lSystemFilePath = mConfig.cachePath; //getSystemFilePath(pContext) + "/crash/";
         File dir = new File(lSystemFilePath);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -85,6 +99,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
                 }
             }
         }
+        return lSystemFilePath + fileName;
     }
 
     public String getTrace(Throwable t) {
@@ -104,5 +119,16 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
             cachePath = context.getCacheDir().getPath();
         }
         return cachePath;
+    }
+
+    public static class Config{
+        String cachePath;
+        ErrorListener listener;
+
+    }
+
+    public interface ErrorListener{
+        void errorBefore(Thread t, Throwable e);
+        void errorAfter(String filePath);
     }
 }
