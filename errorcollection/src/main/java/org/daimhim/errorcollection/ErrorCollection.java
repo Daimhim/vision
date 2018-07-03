@@ -39,14 +39,13 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
     private Config mConfig;
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (null!=mConfig.listener) {
-            mConfig.listener.errorBefore(t, e);
+        if (null!=mConfig.getListener()) {
+            mConfig.getListener().errorBefore(t, e);
         }
         String lS = saveErrorMessages(t, e);
-        if (null!=mConfig.listener){
-            mConfig.listener.errorAfter(lS);
+        if (null!=mConfig.getListener()){
+            mConfig.getListener().errorAfter(lS);
         }
-        Log.d("TAG:ErrorCollection", getTrace(e));
     }
 
     private static class SingletonHolder {
@@ -62,11 +61,13 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
 
     public void init(Application pApplication,Config config) {
         if (null == config){
-            config = new Config();
+            mConfig = new Config();
+        }else {
+            mConfig = config;
         }
         //初始化log保存日志
-        if (TextUtils.isEmpty(config.cachePath)) {
-            config.cachePath = getSystemFilePath(pApplication) + "/crash/";
+        if (TextUtils.isEmpty(mConfig.getCachePath())) {
+            mConfig.setCachePath(getSystemFilePath(pApplication) + "/crash/");
         }
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
@@ -79,7 +80,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
     private String saveErrorMessages(Thread t,Throwable e) {
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
         String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
-        String lSystemFilePath = mConfig.cachePath; //getSystemFilePath(pContext) + "/crash/";
+        String lSystemFilePath = mConfig.cachePath;
         File dir = new File(lSystemFilePath);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -122,9 +123,24 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
     }
 
     public static class Config{
-        String cachePath;
-        ErrorListener listener;
+        private String cachePath;
+        private ErrorListener listener;
 
+        public String getCachePath() {
+            return cachePath;
+        }
+
+        public void setCachePath(String cachePath) {
+            this.cachePath = cachePath;
+        }
+
+        public ErrorListener getListener() {
+            return listener;
+        }
+
+        public void setListener(ErrorListener listener) {
+            this.listener = listener;
+        }
     }
 
     public interface ErrorListener{

@@ -2,6 +2,7 @@ package org.daimhim.vision;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -29,12 +30,38 @@ import timber.log.Timber;
  * @author：Daimhim
  */
 public class StartApp extends Application {
+    private static class SingletonHolder {
+        private static final StartApp INSTANCE = new StartApp();
+    }
 
+    private StartApp() {
+    }
+
+    public static StartApp getInstance() {
+        return StartApp.SingletonHolder.INSTANCE;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(new Timber.DebugTree());
-        ErrorCollection.getInstance().init(this);
+        ErrorCollection.Config config = new ErrorCollection.Config();
+        config.setListener(new ErrorCollection.ErrorListener() {
+            @Override
+            public void errorBefore(Thread t, Throwable e) {
+
+            }
+
+            @Override
+            public void errorAfter(String filePath) {
+                //启动页
+                Intent intent = new Intent(StartApp.getInstance(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                StartApp.getInstance().startActivity(intent);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+
+        });
+        ErrorCollection.getInstance().init(this, config);
     }
 
     //static 代码段可以防止内存泄露
