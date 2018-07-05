@@ -1,8 +1,10 @@
 package org.daimhim.vision;
 
 import android.app.Application;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -30,19 +32,15 @@ import timber.log.Timber;
  * @author：Daimhim
  */
 public class StartApp extends Application {
-    private static class SingletonHolder {
-        private static final StartApp INSTANCE = new StartApp();
-    }
-
-    private StartApp() {
-    }
+    private static StartApp INSTANCE;
 
     public static StartApp getInstance() {
-        return StartApp.SingletonHolder.INSTANCE;
+        return StartApp.INSTANCE;
     }
     @Override
     public void onCreate() {
         super.onCreate();
+        INSTANCE = this;
         Timber.plant(new Timber.DebugTree());
         ErrorCollection.Config config = new ErrorCollection.Config();
         config.setListener(new ErrorCollection.ErrorListener() {
@@ -52,14 +50,14 @@ public class StartApp extends Application {
             }
 
             @Override
-            public void errorAfter(String filePath) {
+            public void errorAfter(Uri filePath) {
+                Timber.e(filePath.toString());
                 //启动页
                 Intent intent = new Intent(StartApp.getInstance(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 StartApp.getInstance().startActivity(intent);
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
-
         });
         ErrorCollection.getInstance().init(this, config);
     }
