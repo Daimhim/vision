@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -16,6 +17,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,13 +37,14 @@ import java.util.Locale;
  */
 public class ErrorCollection implements Thread.UncaughtExceptionHandler {
     private Config mConfig;
+
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (null!=mConfig.getListener()) {
+        if (null != mConfig.getListener()) {
             mConfig.getListener().errorBefore(t, e);
         }
         String lS = saveErrorMessages(t, e);
-        if (null!=mConfig.getListener()){
+        if (null != mConfig.getListener()) {
             mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
         }
     }
@@ -55,10 +60,10 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         return SingletonHolder.INSTANCE;
     }
 
-    public void init(Application pApplication,Config config) {
-        if (null == config){
+    public void init(Application pApplication, Config config) {
+        if (null == config) {
             mConfig = new Config();
-        }else {
+        } else {
             mConfig = config;
         }
         //初始化log保存日志
@@ -70,7 +75,8 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         mConfig.setVersionName(String.valueOf(lPackageInfo.versionName));
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
-    void getSystemInformation(PrintWriter printWriter){
+
+    void getSystemInformation(PrintWriter printWriter) {
         //系统版本号
         printWriter.print("OS Version:");
         printWriter.print(Build.VERSION.RELEASE);
@@ -98,7 +104,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         printWriter.print("SUPPORTED_ABIS:");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             printWriter.println(TextUtils.concat(Build.SUPPORTED_ABIS).toString());
-        }else {
+        } else {
             printWriter.println(Build.CPU_ABI);
         }
 
@@ -106,7 +112,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
 
     }
 
-    private String saveErrorMessages(Thread t,Throwable e) {
+    private String saveErrorMessages(Thread t, Throwable e) {
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
         String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
         String lSystemFilePath = mConfig.cachePath;
@@ -116,7 +122,8 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         }
         PrintWriter printWriter = null;
         try {
-            printWriter = new PrintWriter(new BufferedWriter(new FileWriter(dir + fileName)));
+            printWriter = new PrintWriter(new BufferedWriter(
+                    new FileWriter(lSystemFilePath + fileName)));
             printWriter.println(time);
             getSystemInformation(printWriter);
             printWriter.println();
@@ -143,7 +150,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         return cachePath;
     }
 
-    public static class Config{
+    public static class Config {
         private String cachePath;
         private ErrorListener listener;
         private String versionName;
@@ -182,9 +189,10 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    public interface ErrorListener{
+    public interface ErrorListener {
         /**
          * 保存错误之前
+         *
          * @param t 报错线程
          * @param e 错误信息
          */
@@ -192,6 +200,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
 
         /**
          * 报错之后
+         *
          * @param filePath 文件路径  日志路径
          */
         void errorAfter(Uri filePath);
@@ -213,5 +222,43 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         return pi;
     }
 
+    static class PostFile extends AsyncTask<String, Void, Boolean> {
+        /**
+         * @param strings [0] url [1] requestType
+         *                [2] ReadTimeout [3] ConnectTimeout
+         * @return
+         */
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(strings[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(strings.length < 2 ? "GET" : strings[1]);
+                connection.setReadTimeout(strings.length < 3 ? 5000 : Integer.valueOf(strings[2]));
+                connection.setConnectTimeout(strings.length < 4 ? 10000 :Integer.valueOf(strings[3]));
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+//                    connection.getO
+                } else {
 
+                    return false;
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (null!=connection){
+                    connection.disconnect();
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+        }
+    }
 }
