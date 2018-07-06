@@ -12,9 +12,13 @@ import android.text.TextUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -23,6 +27,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * 项目名称：org.daimhim.errorcollection
@@ -36,6 +42,7 @@ import java.util.Locale;
  * @author：Daimhim
  */
 public class ErrorCollection implements Thread.UncaughtExceptionHandler {
+    public static final String TAG  = "ErrorCollection";
     private Config mConfig;
 
     @Override
@@ -44,6 +51,10 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
             mConfig.getListener().errorBefore(t, e);
         }
         String lS = saveErrorMessages(t, e);
+        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
+                lS,
+                "out",
+                "POST");
         if (null != mConfig.getListener()) {
             mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
         }
@@ -222,43 +233,74 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         return pi;
     }
 
-    static class PostFile extends AsyncTask<String, Void, Boolean> {
+    static class PostFile extends AsyncTask<String, Void, Integer> {
         /**
-         * @param strings [0] url [1] requestType
-         *                [2] ReadTimeout [3] ConnectTimeout
+         * @param strings [0] url [1] filepatch [2] in or out [3] requestType
+         *                [4] ReadTimeout [5] ConnectTimeout
          * @return
          */
         @Override
-        protected Boolean doInBackground(String... strings) {
+        protected Integer doInBackground(String... strings) {
             HttpURLConnection connection = null;
+            InputStream in = null;
+            OutputStream out = null;
             try {
                 URL url = new URL(strings[0]);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod(strings.length < 2 ? "GET" : strings[1]);
-                connection.setReadTimeout(strings.length < 3 ? 5000 : Integer.valueOf(strings[2]));
-                connection.setConnectTimeout(strings.length < 4 ? 10000 :Integer.valueOf(strings[3]));
+                connection.setRequestMethod(strings.length < 4 ? "GET" : strings[3]);
+                connection.setReadTimeout(strings.length < 5 ? 5000 : Integer.valueOf(strings[4]));
+                connection.setConnectTimeout(strings.length < 6 ? 10000 : Integer.valueOf(strings[5]));
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//                    connection.getO
-                } else {
-
-                    return false;
+                    String lString = strings[2];
+                    if ("in".equals(lString)) {
+                        in = connection.getInputStream();
+                        out = new FileOutputStream(new File(strings[1]));
+                    } else {
+                        out = connection.getOutputStream();
+                        in = new FileInputStream(new File(strings[1]));
+                        out.write("file=".getBytes());
+                    }
+                    byte[] buf = new byte[1024];
+                    int ch;
+                    while ((ch = in.read(buf)) != -1) {
+                        out.write(buf, 0, ch);
+                    }
+                    if (out != null) {
+                        out.flush();
+                        out.close();
+                    }
                 }
+                return connection.getResponseCode();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                if (null!=connection){
+                if (null != connection) {
                     connection.disconnect();
                 }
+                if (null != in) {
+                    try {
+                        in.close();
+                    } catch (IOException pE) {
+                        pE.printStackTrace();
+                    }
+                }
+                if (null != out) {
+                    try {
+                        out.close();
+                    } catch (IOException pE) {
+                        pE.printStackTrace();
+                    }
+                }
             }
-            return false;
+            return HttpURLConnection.HTTP_NO_CONTENT;
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-
+        protected void onPostExecute(Integer pInteger) {
+            super.onPostExecute(pInteger);
+            System.out.println(TAG+"网络请求失败:"+pInteger);
         }
     }
 }
