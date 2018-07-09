@@ -41,24 +41,9 @@ import static android.content.ContentValues.TAG;
  *
  * @author：Daimhim
  */
-public class ErrorCollection implements Thread.UncaughtExceptionHandler {
+public class ErrorCollection  {
     public static final String TAG  = "ErrorCollection";
     private Config mConfig;
-
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        if (null != mConfig.getListener()) {
-            mConfig.getListener().errorBefore(t, e);
-        }
-        String lS = saveErrorMessages(t, e);
-//        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
-//                lS,
-//                "out",
-//                "POST");
-        if (null != mConfig.getListener()) {
-            mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
-        }
-    }
 
     private static class SingletonHolder {
         private static final ErrorCollection INSTANCE = new ErrorCollection();
@@ -84,70 +69,7 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         PackageInfo lPackageInfo = getPackageInfo(pApplication);
         mConfig.setVersionCode(String.valueOf(lPackageInfo.versionCode));
         mConfig.setVersionName(String.valueOf(lPackageInfo.versionName));
-        Thread.setDefaultUncaughtExceptionHandler(this);
-    }
-
-    void getSystemInformation(PrintWriter printWriter) {
-        //系统版本号
-        printWriter.print("OS Version:");
-        printWriter.print(Build.VERSION.RELEASE);
-        printWriter.print("_");
-        printWriter.println(Build.VERSION.SDK_INT);
-        //硬件制造商
-        printWriter.print("Vendor:");
-        printWriter.println(Build.MANUFACTURER);
-        //系统定制商
-        printWriter.print("Brand:");
-        printWriter.println(Build.BRAND);
-        printWriter.print("ID:");
-        printWriter.println(Build.ID);
-        printWriter.print("MODEL :");
-        printWriter.println(Build.MODEL);
-        printWriter.print("PRODUCT :");
-        printWriter.println(Build.PRODUCT);
-        printWriter.print("TIME :");
-        printWriter.println(Build.TIME);
-        printWriter.print("APP_VERSIONNAME :");
-        printWriter.println(mConfig.getVersionName());
-        printWriter.print("APP_VERSIOCODE :");
-        printWriter.println(mConfig.getVersionCode());
-        //获取设备指令集名称（CPU的类型）
-        printWriter.print("SUPPORTED_ABIS:");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            printWriter.println(TextUtils.concat(Build.SUPPORTED_ABIS).toString());
-        } else {
-            printWriter.println(Build.CPU_ABI);
-        }
-
-        printWriter.println();
-
-    }
-
-    private String saveErrorMessages(Thread t, Throwable e) {
-        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
-        String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
-        String lSystemFilePath = mConfig.cachePath;
-        File dir = new File(lSystemFilePath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        PrintWriter printWriter = null;
-        try {
-            printWriter = new PrintWriter(new BufferedWriter(
-                    new FileWriter(lSystemFilePath + fileName)));
-            printWriter.println(time);
-            getSystemInformation(printWriter);
-            printWriter.println();
-            e.printStackTrace(printWriter);
-            printWriter.close();
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
-            }
-        }
-        return lSystemFilePath + fileName;
+        Thread.setDefaultUncaughtExceptionHandler(new ErrorCollectionUncaughtException(mConfig));
     }
 
     private String getSystemFilePath(Context context) {
@@ -301,6 +223,91 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
         protected void onPostExecute(Integer pInteger) {
             super.onPostExecute(pInteger);
             System.out.println(TAG+"网络请求失败:"+pInteger);
+        }
+    }
+
+
+    static class ErrorCollectionUncaughtException implements Thread.UncaughtExceptionHandler{
+        Config mConfig;
+
+        public ErrorCollectionUncaughtException(Config pConfig) {
+            mConfig = pConfig;
+        }
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            if (null != mConfig.getListener()) {
+                mConfig.getListener().errorBefore(t, e);
+            }
+            String lS = saveErrorMessages(t, e);
+//        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
+//                lS,
+//                "out",
+//                "POST");
+            if (null != mConfig.getListener()) {
+                mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
+            }
+        }
+        private String saveErrorMessages(Thread t, Throwable e) {
+            String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
+            String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
+            String lSystemFilePath = mConfig.cachePath;
+            File dir = new File(lSystemFilePath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            PrintWriter printWriter = null;
+            try {
+                printWriter = new PrintWriter(new BufferedWriter(
+                        new FileWriter(lSystemFilePath + fileName)));
+                printWriter.println(time);
+                getSystemInformation(printWriter);
+                printWriter.println();
+                e.printStackTrace(printWriter);
+                printWriter.close();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            } finally {
+                if (printWriter != null) {
+                    printWriter.close();
+                }
+            }
+            return lSystemFilePath + fileName;
+        }
+        void getSystemInformation(PrintWriter printWriter) {
+            //系统版本号
+            printWriter.print("OS Version:");
+            printWriter.print(Build.VERSION.RELEASE);
+            printWriter.print("_");
+            printWriter.println(Build.VERSION.SDK_INT);
+            //硬件制造商
+            printWriter.print("Vendor:");
+            printWriter.println(Build.MANUFACTURER);
+            //系统定制商
+            printWriter.print("Brand:");
+            printWriter.println(Build.BRAND);
+            printWriter.print("ID:");
+            printWriter.println(Build.ID);
+            printWriter.print("MODEL :");
+            printWriter.println(Build.MODEL);
+            printWriter.print("PRODUCT :");
+            printWriter.println(Build.PRODUCT);
+            printWriter.print("TIME :");
+            printWriter.println(Build.TIME);
+            printWriter.print("APP_VERSIONNAME :");
+            printWriter.println(mConfig.getVersionName());
+            printWriter.print("APP_VERSIOCODE :");
+            printWriter.println(mConfig.getVersionCode());
+            //获取设备指令集名称（CPU的类型）
+            printWriter.print("SUPPORTED_ABIS:");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                printWriter.println(TextUtils.concat(Build.SUPPORTED_ABIS).toString());
+            } else {
+                printWriter.println(Build.CPU_ABI);
+            }
+
+            printWriter.println();
+
         }
     }
 }
