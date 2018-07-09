@@ -51,10 +51,10 @@ public class ErrorCollection implements Thread.UncaughtExceptionHandler {
             mConfig.getListener().errorBefore(t, e);
         }
         String lS = saveErrorMessages(t, e);
-        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
-                lS,
-                "out",
-                "POST");
+//        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
+//                lS,
+//                "out",
+//                "POST");
         if (null != mConfig.getListener()) {
             mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
         }
