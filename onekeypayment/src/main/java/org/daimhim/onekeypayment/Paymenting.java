@@ -47,12 +47,11 @@ import static org.daimhim.onekeypayment.PaymentConst.WX_PAY;
  * Result是指doInBackground()的返回值类型
  */
 class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
-    String TAG  = getClass().getSimpleName();
+    String TAG = getClass().getSimpleName();
     /**
      * 微信回调接口
      */
     public static PayIWXAPIEventHandler sIWXAPIEventHandler;
-
     @SuppressLint("StaticFieldLeak")
     private Activity mActivity;
     private PaymentCallback mPaymentCallback;
@@ -63,7 +62,8 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     }
 
     @Override
-    protected synchronized PaymentReponse doInBackground(PaymentRequest... pPaymentRequests) {
+    protected PaymentReponse doInBackground(PaymentRequest... pPaymentRequests) {
+        Log.e(TAG, "doInBackground");
         PaymentReponse lReponse = null;
         try {
             lReponse = new PaymentReponse();
@@ -78,7 +78,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     String lPay = null;
                     if (TextUtils.isEmpty(lPayParameter1.getSignInfo())) {
                         lPay = new PayTask(mActivity).pay(alPayParameter(lPayParameter1), true);
-                    }else {
+                    } else {
                         lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
                     }
                     if (TextUtils.isEmpty(lPay)) {
@@ -91,7 +91,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 case WX_PAY:
                     //微信
                     WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
-                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity,  lPayParameter.getAppId(), true);
+                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity, lPayParameter.getAppId(), true);
                     lWXAPI.registerApp(lPayParameter.getAppId());
                     if (lWXAPI.isWXAppInstalled()) {
                         PayReq req = new PayReq();
@@ -101,8 +101,8 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                         req.prepayId = lPayParameter.getPrepayId();
                         req.packageValue = lPayParameter.getPackageValue();
                         req.nonceStr = lPayParameter.getNonceStr();
-                        req.timeStamp = TextUtils.isEmpty(lPayParameter.getTimeStamp())?
-                                String.valueOf(System.currentTimeMillis() / 1000):lPayParameter.getTimeStamp();
+                        req.timeStamp = TextUtils.isEmpty(lPayParameter.getTimeStamp()) ?
+                                String.valueOf(System.currentTimeMillis() / 1000) : lPayParameter.getTimeStamp();
                         //如果后台不返回则自行加密
                         if (TextUtils.isEmpty(lPayParameter.getPaySign())) {
                             MD5 md5 = new MD5();
@@ -114,13 +114,17 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                             md5.put("timestamp", req.timeStamp);
                             md5.put("key", lPayParameter.getApikey());
                             req.sign = md5.getMessageDigest(md5.toString().getBytes()).toUpperCase(Locale.CHINA);
-                        }else {
+                        } else {
                             req.sign = lPayParameter.getPaySign();
                         }
                         lWXAPI.sendReq(req);
                         sIWXAPIEventHandler = new PayIWXAPIEventHandler();
                         while (!sIWXAPIEventHandler.isRun) {
-                            wait(1000);
+                            try {
+                                Thread.sleep(600);
+                            } catch (InterruptedException pE) {
+                                pE.printStackTrace();
+                            }
                         }
                         BaseResp lBaseResp = sIWXAPIEventHandler.getBaseResp();
                         if (null != lBaseResp) {
@@ -145,8 +149,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     break;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             recycling();
         }
@@ -195,6 +197,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     class PayIWXAPIEventHandler implements IWXAPIEventHandler {
         boolean isRun = false;
         private BaseResp mBaseResp;
+
         @Override
         public void onReq(BaseReq pBaseReq) {
 
@@ -262,25 +265,31 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
 
     /**
      * 用于编成支付宝 需要的参数
+     *
      * @param pClass 外面传入的参数
      * @return 返回值
      * @throws IllegalAccessException 反射失败
      */
-    private String alPayParameter(AlPayParameter pClass) throws IllegalAccessException {
+    private String alPayParameter(AlPayParameter pClass) {
+
         Field[] lDeclaredFields = pClass.getClass().getDeclaredFields();
         StringBuilder lStringBuilder = new StringBuilder();
-        for (Field field :
-                lDeclaredFields) {
-            field.setAccessible(true);
-            if (!"signInfo".equals(field.getName())) {
-                lStringBuilder.append(field.getName())
-                        .append("=")
-                        .append((String) field.get(pClass))
-                        .append("&");
+        try {
+            for (Field field :
+                    lDeclaredFields) {
+                field.setAccessible(true);
+                if (!"signInfo".equals(field.getName())) {
+                    lStringBuilder.append(field.getName())
+                            .append("=")
+                            .append((String) field.get(pClass))
+                            .append("&");
+                }
             }
+        } catch (IllegalAccessException pE) {
+            pE.printStackTrace();
         }
         //删除最后一个
-        lStringBuilder.deleteCharAt(lStringBuilder.length()-1);
+        lStringBuilder.deleteCharAt(lStringBuilder.length() - 1);
         return lStringBuilder.toString();
     }
 }

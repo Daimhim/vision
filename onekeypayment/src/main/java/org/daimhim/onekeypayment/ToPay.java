@@ -17,6 +17,7 @@ import org.daimhim.onekeypayment.model.PaymentRequest;
  * @author：Daimhim
  */
 public class ToPay {
+
     /**
      * 支付
      * @param pActivity 调用界面 支付完成后会 = null
