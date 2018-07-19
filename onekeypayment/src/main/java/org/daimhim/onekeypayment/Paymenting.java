@@ -169,8 +169,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     protected void onPreExecute() {
         super.onPreExecute();
         mFragment = new PaymentingFragment();
-        int lBackStackEntryCount = mActivity.getFragmentManager().getBackStackEntryCount();
-        Log.e(TAG,"lBackStackEntryCount:"+lBackStackEntryCount);
         mActivity.getFragmentManager()
                 .beginTransaction()
                 .add(mFragment, TAG)
