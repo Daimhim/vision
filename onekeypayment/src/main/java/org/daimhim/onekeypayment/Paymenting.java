@@ -2,9 +2,13 @@ package org.daimhim.onekeypayment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ViewTreeObserver;
 
 import com.alipay.sdk.app.PayTask;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -47,6 +51,9 @@ import static org.daimhim.onekeypayment.PaymentConst.WX_PAY;
  * Result是指doInBackground()的返回值类型
  */
 class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
+
+    private PaymentingFragment mFragment;
+
     String TAG = getClass().getSimpleName();
     /**
      * 微信回调接口
@@ -161,6 +168,13 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        mFragment = new PaymentingFragment();
+        int lBackStackEntryCount = mActivity.getFragmentManager().getBackStackEntryCount();
+        Log.e(TAG,"lBackStackEntryCount:"+lBackStackEntryCount);
+        mActivity.getFragmentManager()
+                .beginTransaction()
+                .add(mFragment, TAG)
+                .commit();
     }
 
     /**
@@ -179,9 +193,12 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     }
 
     private void recycling() {
+        mActivity.getFragmentManager().beginTransaction().remove(mFragment).commit();
         mActivity = null;
+        mFragment = null;
         sIWXAPIEventHandler = null;
         PaymentConst.WX_APP_ID = null;
+        cancel(true);
     }
 
     /**

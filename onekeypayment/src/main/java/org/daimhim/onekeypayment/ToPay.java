@@ -17,7 +17,15 @@ import org.daimhim.onekeypayment.model.PaymentRequest;
  * @author：Daimhim
  */
 public class ToPay {
+    private ToPay(){
 
+    }
+    private static class SingletonHolder{
+        private final static ToPay instance=new ToPay();
+    }
+    public static ToPay getInstance(){
+        return SingletonHolder.instance;
+    }
     /**
      * 支付
      * @param pActivity 调用界面 支付完成后会 = null
