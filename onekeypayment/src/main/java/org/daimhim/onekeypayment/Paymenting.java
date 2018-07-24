@@ -132,6 +132,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                             } catch (InterruptedException pE) {
                                 pE.printStackTrace();
                             }
+                            Log.d(TAG,"sIWXAPIEventHandler.isRun:"+sIWXAPIEventHandler.isRun);
                         }
                         BaseResp lBaseResp = sIWXAPIEventHandler.getBaseResp();
                         if (null != lBaseResp) {
@@ -196,7 +197,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         mFragment = null;
         sIWXAPIEventHandler = null;
         PaymentConst.WX_APP_ID = null;
-        cancel(true);
     }
 
     /**
