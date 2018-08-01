@@ -51,7 +51,6 @@ import static org.daimhim.onekeypayment.PaymentConst.WX_PAY;
  * Result是指doInBackground()的返回值类型
  */
 class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
-
     private PaymentingFragment mFragment;
 
     String TAG = getClass().getSimpleName();
@@ -84,7 +83,9 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     AlPayParameter lPayParameter1 = (AlPayParameter) lPaymentRequest.getPayParameter();
                     String lPay = null;
                     if (TextUtils.isEmpty(lPayParameter1.getSignInfo())) {
-                        lPay = new PayTask(mActivity).pay(alPayParameter(lPayParameter1), true);
+                        lPayParameter1.setSign(SignUtils.sign(alPayParameter(lPayParameter1,false),lPayParameter1.getPrivate_key(),true));
+                        lPayParameter1.setSignInfo(alPayParameter(lPayParameter1,true));
+                        lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
                     } else {
                         lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
                     }
@@ -285,7 +286,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
      * @return 返回值
      * @throws IllegalAccessException 反射失败
      */
-    private String alPayParameter(AlPayParameter pClass) {
+    private String alPayParameter(AlPayParameter pClass,boolean frist) {
 
         Field[] lDeclaredFields = pClass.getClass().getDeclaredFields();
         StringBuilder lStringBuilder = new StringBuilder();
@@ -294,6 +295,9 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     lDeclaredFields) {
                 field.setAccessible(true);
                 if (!"signInfo".equals(field.getName())) {
+                    if ("sign".equals(field.getName()) && !frist) {
+                        continue;
+                    }
                     lStringBuilder.append(field.getName())
                             .append("=")
                             .append((String) field.get(pClass))

@@ -20,7 +20,61 @@ public class AlPayParameter extends PayParameter {
     private String timestamp;
     private String version;
     private String sign;
+    private String format;
+    /**
+     * 支付宝支付回调
+     */
+    private String notify_url;
+    /**
+     * 签名后的结果 自定义字段
+     */
     private String signInfo;
+    /**
+     * 私钥   需要拼接时传入
+     */
+    private String private_key;
+
+    @Override
+    public String toString() {
+        return "AlPayParameter{" +
+                "app_id='" + app_id + '\'' +
+                ", biz_content='" + biz_content + '\'' +
+                ", charset='" + charset + '\'' +
+                ", method='" + method + '\'' +
+                ", sign_type='" + sign_type + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", version='" + version + '\'' +
+                ", sign='" + sign + '\'' +
+                ", format='" + format + '\'' +
+                ", notify_url='" + notify_url + '\'' +
+                ", signInfo='" + signInfo + '\'' +
+                ", private_key='" + private_key + '\'' +
+                '}';
+    }
+
+    public String getPrivate_key() {
+        return private_key;
+    }
+
+    public void setPrivate_key(String pPrivate_key) {
+        private_key = pPrivate_key;
+    }
+
+    public String getNotify_url() {
+        return notify_url;
+    }
+
+    public void setNotify_url(String pNotify_url) {
+        notify_url = pNotify_url;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String pFormat) {
+        format = pFormat;
+    }
 
     public String getApp_id() {
         return app_id;
@@ -94,18 +148,4 @@ public class AlPayParameter extends PayParameter {
         signInfo = pSignInfo;
     }
 
-    @Override
-    public String toString() {
-        return "AlPayParameter{" +
-                "app_id='" + app_id + '\'' +
-                ", biz_content='" + biz_content + '\'' +
-                ", charset='" + charset + '\'' +
-                ", method='" + method + '\'' +
-                ", sign_type='" + sign_type + '\'' +
-                ", timestamp='" + timestamp + '\'' +
-                ", version='" + version + '\'' +
-                ", sign='" + sign + '\'' +
-                ", signInfo='" + signInfo + '\'' +
-                '}';
-    }
 }
