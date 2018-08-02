@@ -30,7 +30,7 @@ dependencies {
     //微信支付
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
     //支付宝支付
-    api files('libs/alipaySdk-20180403.jar')
+    api files('libs/alipaySdk-20180601.jar')
 }
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
 
