@@ -107,6 +107,9 @@ ToPay.getInstance().toPayment(activity.this, lPaymentRequest, activity.this);
 //onPaymentFailure 支付还未调起的失败，这种情况请来联系作者
 ```
 # 版本更新说明
+##### 1.0.8
+>1. 修复支付宝个别参数拼接异常
+>2. 增加支付宝拼接参数
 ##### 1.0.7
 > 1. 修复了在微信双开情况下如果取消使用哪个微信支付的选择弹窗，之后支付调不起来的
 > 2. 优化了支付调用，使用单例+懒加载，优化内存 
