@@ -19,6 +19,9 @@ public class AlPayParameter extends PayParameter {
     private String sign_type;
     private String timestamp;
     private String version;
+    /**
+     * 拼接并加密
+     */
     private String sign;
     private String format;
     /**
@@ -26,7 +29,7 @@ public class AlPayParameter extends PayParameter {
      */
     private String notify_url;
     /**
-     * 签名后的结果 自定义字段
+     * 签名后的结果 自定义字段 用于最后的支付
      */
     private String signInfo;
     /**

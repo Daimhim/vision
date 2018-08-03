@@ -12,4 +12,13 @@ package org.daimhim.onekeypayment.model;
  * @author：Daimhim
  */
 public abstract class PayParameter {
+    private boolean debug;
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean pDebug) {
+        debug = pDebug;
+    }
 }

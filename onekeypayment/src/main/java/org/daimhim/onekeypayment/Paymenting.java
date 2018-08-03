@@ -74,7 +74,8 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         try {
             lReponse = new PaymentReponse();
             PaymentRequest lPaymentRequest = pPaymentRequests[0];
-            if (BuildConfig.DEBUG) {
+            if (lPaymentRequest.getPayParameter().isDebug()) {
+                parameterDetection(lPaymentRequest);
                 Log.d(TAG, lPaymentRequest.toString());
             }
             switch (lPaymentRequest.getPayType()) {
@@ -83,8 +84,9 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     AlPayParameter lPayParameter1 = (AlPayParameter) lPaymentRequest.getPayParameter();
                     String lPay = null;
                     if (TextUtils.isEmpty(lPayParameter1.getSignInfo())) {
-                        lPayParameter1.setSign(SignUtils.sign(alPayParameter(lPayParameter1,false),lPayParameter1.getPrivate_key(),true));
-                        lPayParameter1.setSignInfo(alPayParameter(lPayParameter1,true));
+                        lPayParameter1.setSign(SignUtils.sign(alPayParameter(lPayParameter1, false),
+                                lPayParameter1.getPrivate_key(), true));
+                        lPayParameter1.setSignInfo(alPayParameter(lPayParameter1, true));
                         lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
                     } else {
                         lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
@@ -133,7 +135,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                             } catch (InterruptedException pE) {
                                 pE.printStackTrace();
                             }
-                            Log.d(TAG,"sIWXAPIEventHandler.isRun:"+sIWXAPIEventHandler.isRun);
+                            Log.d(TAG, "sIWXAPIEventHandler.isRun:" + sIWXAPIEventHandler.isRun);
                         }
                         BaseResp lBaseResp = sIWXAPIEventHandler.getBaseResp();
                         if (null != lBaseResp) {
@@ -162,6 +164,54 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
             recycling();
         }
         return lReponse;
+    }
+
+    private void parameterDetection(PaymentRequest lPaymentRequest) {
+        switch (lPaymentRequest.getPayType()) {
+            case AL_PAY:
+                //支付宝
+                AlPayParameter lPayParameter1 = (AlPayParameter) lPaymentRequest.getPayParameter();
+                Log.d(TAG,"当前是支付宝支付，参数如下："+lPayParameter1.toString());
+                if (TextUtils.isEmpty(lPayParameter1.getSignInfo())) {
+                    Log.d(TAG,"当前是支付宝支付，模式为参数自动拼接");
+                    if (TextUtils.isEmpty(lPayParameter1.getBiz_content())) {
+                        Log.d(TAG, "biz_content:为空，该参数包含订单相关信息");
+                    }
+                    if (TextUtils.isEmpty(lPayParameter1.getApp_id())) {
+                        Log.d(TAG, "app_id:为空，该参数是App唯一标识，若不是拼接模式可不传");
+                    }
+                    if (TextUtils.isEmpty(lPayParameter1.getNotify_url())) {
+                        Log.d(TAG, "notify_url:为空，该参数s是支付后的回调连接，一般用于后台");
+                    }
+                }else {
+                    Log.d(TAG,"当前是支付宝支付，模式为参数已拼接");
+
+                }
+                break;
+            case WX_PAY:
+                WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
+                Log.d(TAG,"当前是微信支付，参数如下："+lPayParameter.toString());
+                MD5 md5 = new MD5();
+                md5.put("appid", lPayParameter.getAppId());
+                md5.put("partnerid", lPayParameter.getAppId());
+                md5.put("prepayid", lPayParameter.getPartnerId());
+                md5.put("package", lPayParameter.getPrepayId());
+                md5.put("noncestr", lPayParameter.getPackageValue());
+                md5.put("timestamp", TextUtils.isEmpty(lPayParameter.getTimeStamp()) ?
+                        String.valueOf(System.currentTimeMillis() / 1000) : lPayParameter.getTimeStamp());
+                md5.put("key", lPayParameter.getApikey());
+                String sign = md5.getMessageDigest(md5.toString().getBytes()).toUpperCase(Locale.CHINA);
+                if (TextUtils.isEmpty(lPayParameter.getPaySign())){
+                    Log.d(TAG,"当前是微信支付，模式为参数自动拼接");
+
+                }else {
+                    Log.d(TAG,"当前是微信支付，模式为参数已拼接");
+
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -286,7 +336,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
      * @return 返回值
      * @throws IllegalAccessException 反射失败
      */
-    private String alPayParameter(AlPayParameter pClass,boolean frist) {
+    private String alPayParameter(AlPayParameter pClass, boolean frist) {
 
         Field[] lDeclaredFields = pClass.getClass().getDeclaredFields();
         StringBuilder lStringBuilder = new StringBuilder();
