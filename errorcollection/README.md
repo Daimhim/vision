@@ -43,6 +43,8 @@ private void initErrorCollection() {
 // 默认日志储存路径：sdcard/Android/data/包名/cache/crash/
 ```
 # 版本更新说明
+##### 1.0.3
+> 1.增加连续崩溃处理
 ##### 1.0.2
 > 1. 增加手机信息的收集保存
 ##### 1.0.0
