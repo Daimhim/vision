@@ -41,9 +41,10 @@ import static android.content.ContentValues.TAG;
  *
  * @author：Daimhim
  */
-public class ErrorCollection  {
-    public static final String TAG  = "ErrorCollection";
+public class ErrorCollection {
+    public static final String TAG = "ErrorCollection";
     private Config mConfig;
+    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
     private static class SingletonHolder {
         private static final ErrorCollection INSTANCE = new ErrorCollection();
@@ -69,6 +70,7 @@ public class ErrorCollection  {
         PackageInfo lPackageInfo = getPackageInfo(pApplication);
         mConfig.setVersionCode(String.valueOf(lPackageInfo.versionCode));
         mConfig.setVersionName(String.valueOf(lPackageInfo.versionName));
+        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new ErrorCollectionUncaughtException(mConfig));
     }
 
@@ -222,12 +224,12 @@ public class ErrorCollection  {
         @Override
         protected void onPostExecute(Integer pInteger) {
             super.onPostExecute(pInteger);
-            System.out.println(TAG+"网络请求失败:"+pInteger);
+            System.out.println(TAG + "网络请求失败:" + pInteger);
         }
     }
 
 
-    static class ErrorCollectionUncaughtException implements Thread.UncaughtExceptionHandler{
+    static class ErrorCollectionUncaughtException implements Thread.UncaughtExceptionHandler {
         Config mConfig;
 
         public ErrorCollectionUncaughtException(Config pConfig) {
@@ -236,18 +238,23 @@ public class ErrorCollection  {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            if (null != mConfig.getListener()) {
-                mConfig.getListener().errorBefore(t, e);
-            }
-            String lS = saveErrorMessages(t, e);
-//        new PostFile().execute("http://192.168.1.83:8080/zsmapi1.12.0/user/savaData",
-//                lS,
-//                "out",
-//                "POST");
-            if (null != mConfig.getListener()) {
-                mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
+            try {
+                if (null != mConfig.getListener()) {
+                    mConfig.getListener().errorBefore(t, e);
+                }
+                String lS = saveErrorMessages(t, e);
+                if (null != mConfig.getListener()) {
+                    mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
+                }
+            } catch (Exception pE) {
+                pE.printStackTrace();
+                String lS = saveErrorMessages(t, pE);
+                if (null != mConfig.getListener()) {
+                    mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
+                }
             }
         }
+
         private String saveErrorMessages(Thread t, Throwable e) {
             String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
             String fileName = "error-" + time + "-" + System.currentTimeMillis() + ".log";
@@ -274,6 +281,7 @@ public class ErrorCollection  {
             }
             return lSystemFilePath + fileName;
         }
+
         void getSystemInformation(PrintWriter printWriter) {
             //系统版本号
             printWriter.print("OS Version:");
