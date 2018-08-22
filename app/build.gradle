@@ -13,14 +13,6 @@ android {
         versionName '1.0.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    signingConfigs {
-        debug {
-            storeFile file('appKeyStore.appKeyStore')
-            storePassword 'meyki@1009'
-            keyAlias '中航免税'
-            keyPassword 'meyki@1009'
-        }
-    }
     buildTypes {
         release {
             minifyEnabled false
@@ -28,10 +20,6 @@ android {
         }
         debug {
             debuggable true
-            signingConfig signingConfigs.debug
-            buildConfigField("String", "BASE_URL", '"http://test.meyki.net:9080/apidev/"')
-            buildConfigField("String", "EM_APP_KEY", '"meyki#zsm"')
-            buildConfigField("Integer", "TIMM_APP_KEY", '1400099771')
         }
     }
 }

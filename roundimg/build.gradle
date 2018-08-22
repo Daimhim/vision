@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -26,7 +26,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    compileOnly 'com.android.support:support-v4:27.0.2'
+    compileOnly 'com.android.support:support-v4:26.1.0'
 }
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
 
@@ -34,11 +34,11 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //包名
-group = "org.daimhim.widget"
+group = "org.daimhim.roundimg"
 //仓库名
 def maven_repo = "widget"
 //发布到JCenter上的项目名字，必须填写
-def libName = "banner"            //依赖名
+def libName = "roundimageview"            //依赖名
 // 版本号，下次更新是只需要更改版本号即可
 version = android.defaultConfig.versionName
 /**  上面配置后上传至jcenter后的编译路径是这样的： compile 'org.daimhim.rvdecoration:rvadapter:1.0.0'  **/
@@ -129,7 +129,7 @@ bintray {
     pkg {
         repo = maven_repo
         name = libName    //发布到JCenter上的项目名字，必须填写
-        desc =  "banner up banner2"   //项目描述
+        desc =  "Error Collection tools"   //项目描述
         websiteUrl = siteUrl
         issueTrackerUrl = gitissues
         vcsUrl = gitUrl

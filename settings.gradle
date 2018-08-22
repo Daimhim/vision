@@ -1,1 +1,1 @@
-include ':app', ':weakhandler', ':onekeypayment', ':zxing', ':croppicture', ':pictureload', ':errorcollection', ':banner', ':bannerdemo'
+include ':app', ':weakhandler', ':onekeypayment', ':zxing', ':croppicture', ':pictureload', ':errorcollection', ':banner', ':bannerdemo', ':roundimg'
