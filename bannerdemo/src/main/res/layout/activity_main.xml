@@ -16,6 +16,9 @@
         app:layout_constraintTop_toTopOf="parent" />
     <org.daimhim.banner.Banner
         android:id="@+id/b_banner"
+        app:three_pages="true"
+        app:page_margin="10dp"
+        app:page_padding="20dp"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 </android.support.constraint.ConstraintLayout>

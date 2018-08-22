@@ -108,9 +108,10 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         numIndicatorInside = (TextView) view.findViewById(R.id.numIndicatorInside);
         bannerDefaultImage.setImageResource(bannerBackgroundImage);
         if (threePages) {
-            ((ViewGroup) view.findViewById(R.id.bannerContainer)).setClipChildren(false);
-            viewPager.setClipToPadding(false);
-            viewPager.setPadding(pagePadding + pageMargin, 0, pagePadding + pageMargin, 0);
+            MarginLayoutParams lLayoutParams = (MarginLayoutParams) viewPager.getLayoutParams();
+            lLayoutParams.leftMargin = pagePadding + pageMargin;
+            lLayoutParams.rightMargin = pagePadding + pageMargin;
+            viewPager.setLayoutParams(lLayoutParams);
             viewPager.setPageMargin(pageMargin);
         }
         initViewPagerScroll();
