@@ -1,22 +1,37 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
-    buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
         applicationId "org.daimhim.vision"
         vectorDrawables.useSupportLibrary = true
-        minSdkVersion rootProject.ext.MIN_SDK_VERSION
-        targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
-        versionCode rootProject.ext.APP_VERSIONCODE
-        versionName rootProject.ext.APP_VERSIONNAME
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName '1.0.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        debug {
+            storeFile file('appKeyStore.appKeyStore')
+            storePassword 'meyki@1009'
+            keyAlias '中航免税'
+            keyPassword 'meyki@1009'
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
+            buildConfigField("String", "BASE_URL", '"http://test.meyki.net:9080/apidev/"')
+            buildConfigField("String", "EM_APP_KEY", '"meyki#zsm"')
+            buildConfigField("Integer", "TIMM_APP_KEY", '1400099771')
         }
     }
 }
@@ -27,19 +42,21 @@ configurations.all {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.LIB_VERSION"
+    implementation "com.android.support:appcompat-v7:25.4.0"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'org.daimhim.weakhandler:weakhandler:1.0.0'
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
-    implementation 'net.meyki.library:viewlibrary:1.0.0'
-    implementation 'net.meyki.modules:msgmodules:1.0.1'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation project(':onekeypayment')
     implementation project(':croppicture')
     implementation rootProject.ext.dependencies.libSmartRefreshLayout
     implementation rootProject.ext.dependencies.libButterKnife
     annotationProcessor rootProject.ext.dependencies.libButterknifeCompiler
     implementation project(':errorcollection')
+    implementation project(':banner')
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 }
