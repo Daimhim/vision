@@ -117,11 +117,6 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         initViewPagerScroll();
     }
 
-    @Override
-    protected boolean dispatchHoverEvent(MotionEvent event) {
-        return viewPager.dispatchTouchEvent(event);
-    }
-
     private void handleTypedArray(Context context, AttributeSet attrs) {
         if (attrs == null) {
             return;
@@ -495,7 +490,8 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
                 stopAutoPlay();
             }
         }
-        return super.dispatchTouchEvent(ev);
+        viewPager.dispatchTouchEvent(ev);
+        return true;
     }
 
     /**
