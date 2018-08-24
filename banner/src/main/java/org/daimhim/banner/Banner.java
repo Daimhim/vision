@@ -481,8 +481,8 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
 //        Log.i(tag, ev.getAction() + "--" + isAutoPlay);
+        int action = ev.getAction();
         if (isAutoPlay) {
-            int action = ev.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
                     || action == MotionEvent.ACTION_OUTSIDE) {
                 startAutoPlay();
@@ -490,8 +490,13 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
                 stopAutoPlay();
             }
         }
-        viewPager.dispatchTouchEvent(ev);
-        return true;
+
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return viewPager.dispatchTouchEvent(event);
     }
 
     /**

@@ -6,5 +6,6 @@
 //include ':pictureload'
 //include ':errorcollection'
 include ':banner'
-include ':bannerdemo'
+//include ':bannerdemo'
+include ':rvadapterdemo'
 //include ':roundimg'
