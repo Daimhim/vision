@@ -38,13 +38,10 @@ dependencies {
     implementation 'org.daimhim.weakhandler:weakhandler:1.0.0'
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation project(':onekeypayment')
-    implementation project(':croppicture')
     implementation rootProject.ext.dependencies.libSmartRefreshLayout
     implementation rootProject.ext.dependencies.libButterKnife
     annotationProcessor rootProject.ext.dependencies.libButterknifeCompiler
     implementation project(':errorcollection')
-    implementation project(':banner')
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 }

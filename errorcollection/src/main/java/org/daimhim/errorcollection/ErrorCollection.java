@@ -1,5 +1,6 @@
 package org.daimhim.errorcollection;
 
+
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -15,20 +16,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * 项目名称：org.daimhim.errorcollection
@@ -42,9 +39,8 @@ import static android.content.ContentValues.TAG;
  * @author：Daimhim
  */
 public class ErrorCollection {
-    public static final String TAG = "ErrorCollection";
+    private static final java.lang.String TAG = "ErrorCollection";
     private Config mConfig;
-    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
     private static class SingletonHolder {
         private static final ErrorCollection INSTANCE = new ErrorCollection();
@@ -70,8 +66,8 @@ public class ErrorCollection {
         PackageInfo lPackageInfo = getPackageInfo(pApplication);
         mConfig.setVersionCode(String.valueOf(lPackageInfo.versionCode));
         mConfig.setVersionName(String.valueOf(lPackageInfo.versionName));
-        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(new ErrorCollectionUncaughtException(mConfig));
+        Thread.setDefaultUncaughtExceptionHandler(new ErrorCollectionUncaughtException(mConfig,
+                Thread.getDefaultUncaughtExceptionHandler()));
     }
 
     private String getSystemFilePath(Context context) {
@@ -189,10 +185,8 @@ public class ErrorCollection {
                     while ((ch = in.read(buf)) != -1) {
                         out.write(buf, 0, ch);
                     }
-                    if (out != null) {
-                        out.flush();
-                        out.close();
-                    }
+                    out.flush();
+                    out.close();
                 }
                 return connection.getResponseCode();
             } catch (MalformedURLException e) {
@@ -231,9 +225,11 @@ public class ErrorCollection {
 
     static class ErrorCollectionUncaughtException implements Thread.UncaughtExceptionHandler {
         Config mConfig;
-
-        public ErrorCollectionUncaughtException(Config pConfig) {
+        Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
+        public ErrorCollectionUncaughtException(Config pConfig,
+                                                Thread.UncaughtExceptionHandler pDefaultUncaughtExceptionHandler) {
             mConfig = pConfig;
+            mDefaultUncaughtExceptionHandler = pDefaultUncaughtExceptionHandler;
         }
 
         @Override
@@ -245,13 +241,12 @@ public class ErrorCollection {
                 String lS = saveErrorMessages(t, e);
                 if (null != mConfig.getListener()) {
                     mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
+                }else {
+                    mDefaultUncaughtExceptionHandler.uncaughtException(t, e);
                 }
             } catch (Exception pE) {
                 pE.printStackTrace();
-                String lS = saveErrorMessages(t, pE);
-                if (null != mConfig.getListener()) {
-                    mConfig.getListener().errorAfter(Uri.fromFile(new File(lS)));
-                }
+                mDefaultUncaughtExceptionHandler.uncaughtException(t, e);
             }
         }
 
