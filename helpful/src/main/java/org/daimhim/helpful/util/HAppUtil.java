@@ -336,7 +336,6 @@ public class HAppUtil {
      * 获取当前版本号
      *
      * @return
-     * @throws Exception
      */
     public static String getVersionName(Context context) {
         StringBuilder builder = new StringBuilder("v");

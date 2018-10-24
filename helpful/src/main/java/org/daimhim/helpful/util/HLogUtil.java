@@ -241,7 +241,6 @@ public class HLogUtil {
 	
 	/**
 	 * 关闭所有日志
-	 * @param d
 	 */
 	public static void closeAll() {
 		D  = false;
