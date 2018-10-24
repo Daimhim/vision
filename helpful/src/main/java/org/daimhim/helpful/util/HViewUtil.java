@@ -307,7 +307,6 @@ public class HViewUtil {
      * @param context
      * @param textPaint
      * @param sizePixels px值
-     * @return
      */
     public static void setTextSize(Context context,TextPaint textPaint,float sizePixels) {
     	float scaledSize = scale(context,sizePixels);

@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-import com.ab.global.AbAppConfig;
+
+import org.daimhim.helpful.global.HAppConfig;
 
 //TODO: Auto-generated Javadoc
 
@@ -16,7 +17,7 @@ import com.ab.global.AbAppConfig;
 */
 public class HSharedUtil {
 
-	private static final String SHARED_PATH = AbAppConfig.SHARED_PATH;
+	private static final String SHARED_PATH = HAppConfig.SHARED_PATH;
 
 	public static SharedPreferences getDefaultSharedPreferences(Context context) {
 		return context.getSharedPreferences(SHARED_PATH, Context.MODE_PRIVATE);

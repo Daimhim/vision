@@ -28,7 +28,8 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
 
-import com.ab.global.AbAppConfig;
+
+import org.daimhim.helpful.global.HAppConfig;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -746,20 +747,20 @@ public class HFileUtil {
 		PackageInfo info = HAppUtil.getPackageInfo(context);
 
 		// 默认下载文件根目录.
-		String downloadRootPath = File.separator + AbAppConfig.DOWNLOAD_ROOT_DIR + File.separator + info.packageName
+		String downloadRootPath = File.separator + HAppConfig.DOWNLOAD_ROOT_DIR + File.separator + info.packageName
 				+ File.separator;
 
 		// 默认下载图片文件目录.
-		String imageDownloadPath = downloadRootPath + AbAppConfig.DOWNLOAD_IMAGE_DIR + File.separator;
+		String imageDownloadPath = downloadRootPath + HAppConfig.DOWNLOAD_IMAGE_DIR + File.separator;
 
 		// 默认下载文件目录.
-		String fileDownloadPath = downloadRootPath + AbAppConfig.DOWNLOAD_FILE_DIR + File.separator;
+		String fileDownloadPath = downloadRootPath + HAppConfig.DOWNLOAD_FILE_DIR + File.separator;
 
 		// 默认缓存目录.
-		String cacheDownloadPath = downloadRootPath + AbAppConfig.CACHE_DIR + File.separator;
+		String cacheDownloadPath = downloadRootPath + HAppConfig.CACHE_DIR + File.separator;
 
 		// 默认DB目录.
-		String dbDownloadPath = downloadRootPath + AbAppConfig.DB_DIR + File.separator;
+		String dbDownloadPath = downloadRootPath + HAppConfig.DB_DIR + File.separator;
 
 		try {
 			if (!isCanUseSD()) {
