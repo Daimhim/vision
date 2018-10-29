@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	package="org.daimhim.vision">
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<application
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
 		android:name="StartApp"
 		android:roundIcon="@mipmap/ic_launcher_round"
-		android:theme="@style/AppTheme">
-		<activity android:name=".MainActivity">
+		android:theme="@style/AppTheme"
+		tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+		<activity
+			android:name=".TestActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				
@@ -17,31 +21,60 @@
 			</intent-filter>
 		</activity>
 		
-		<!--  支付宝支付界面回调 -->
+		<!--&lt;!&ndash;  支付宝支付界面回调 &ndash;&gt;-->
+		<!--<activity-->
+			<!--android:name="com.alipay.sdk.app.H5PayActivity"-->
+			<!--android:exported="false"-->
+			<!--android:screenOrientation="portrait"-->
+			<!--android:windowSoftInputMode="adjustPan|stateHidden" />-->
+		<!--&lt;!&ndash;  微信支付界面回调 &ndash;&gt;-->
+		<!--<activity-->
+			<!--android:name="org.daimhim.onekeypayment.WXPayEntryActivity"-->
+			<!--android:exported="true"-->
+			<!--android:launchMode="singleTop"-->
+			<!--android:screenOrientation="portrait"-->
+			<!--android:windowSoftInputMode="adjustPan|stateHidden">-->
+		<!--</activity>-->
+		<!---->
+		<!--<activity-alias-->
+			<!--android:name=".wxapi.WXPayEntryActivity"-->
+			<!--android:exported="true"-->
+			<!--android:targetActivity="org.daimhim.onekeypayment.WXPayEntryActivity">-->
+			<!--<intent-filter>-->
+				<!--<action android:name="android.intent.action.VIEW"/>-->
+				<!--<category android:name="android.intent.category.DEFAULT"/>-->
+				<!--<data android:scheme="wxb4ba3c02aa476ea1"/>-->
+			<!--</intent-filter>-->
+		<!--</activity-alias>-->
+
 		<activity
-			android:name="com.alipay.sdk.app.H5PayActivity"
-			android:exported="false"
-			android:screenOrientation="portrait"
-			android:windowSoftInputMode="adjustPan|stateHidden" />
-		<!--  微信支付界面回调 -->
-		<activity
-			android:name="org.daimhim.onekeypayment.WXPayEntryActivity"
+			android:name="org.daimhim.afilechooser.ipaulpro.afilechooser.FileChooserActivity"
+			android:enabled="@bool/use_activity"
 			android:exported="true"
-			android:launchMode="singleTop"
-			android:screenOrientation="portrait"
-			android:windowSoftInputMode="adjustPan|stateHidden">
-		</activity>
-		
-		<activity-alias
-			android:name=".wxapi.WXPayEntryActivity"
-			android:exported="true"
-			android:targetActivity="org.daimhim.onekeypayment.WXPayEntryActivity">
+			android:icon="@drawable/ic_chooser"
+			android:label="@string/choose_file" >
 			<intent-filter>
-				<action android:name="android.intent.action.VIEW"/>
-				<category android:name="android.intent.category.DEFAULT"/>
-				<data android:scheme="wxb4ba3c02aa476ea1"/>
+				<action android:name="android.intent.action.GET_CONTENT" />
+
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.OPENABLE" />
+
+				<data android:mimeType="*/*" />
 			</intent-filter>
-		</activity-alias>
+		</activity>
+
+		<provider
+			android:name="org.daimhim.afilechooser.ianhanniballake.localstorage.LocalStorageProvider"
+			android:authorities="org.daimhim.afilechooser.ianhanniballake.localstorage.documents"
+			android:enabled="@bool/use_provider"
+			android:exported="true"
+			android:grantUriPermissions="true"
+			android:permission="android.permission.MANAGE_DOCUMENTS" >
+			<intent-filter>
+				<action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+			</intent-filter>
+		</provider>
+
 	</application>
 
 </manifest>

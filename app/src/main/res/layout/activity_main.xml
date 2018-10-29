@@ -3,7 +3,9 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
+	android:id="@+id/ll_layout"
 	android:gravity="center"
+	android:background="@color/colorPrimary"
 	android:orientation="vertical"
 	android:layout_height="match_parent"
 	tools:context=".MainActivity">
@@ -17,9 +19,14 @@
 	<TextView
 		android:id="@+id/tv_test_path"
 		android:text="di点击测试"
-		
 		android:layout_marginTop="10dp"
 		android:padding="5dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+	<TextView
+		android:id="@+id/tv_select_file"
+		android:text="点我选择文件"
+		android:textColor="@color/colorPrimaryDark"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" />
 </LinearLayout>

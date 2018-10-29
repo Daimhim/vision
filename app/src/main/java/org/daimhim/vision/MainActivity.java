@@ -29,16 +29,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    @OnClick({R.id.tv_error, R.id.tv_test_path})
+    @OnClick({R.id.tv_error, R.id.tv_test_path, R.id.tv_select_file})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_error:
                 throw new NullPointerException("test");
             case R.id.tv_test_path:
                 break;
-                default:
-                    break;
+            case R.id.tv_select_file:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.ll_layout, new SelectFileFragment())
+                        .commit();
+                break;
+            default:
+                break;
         }
     }
 }
