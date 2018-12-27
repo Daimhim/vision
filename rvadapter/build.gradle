@@ -4,11 +4,12 @@ android {
     compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
     buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
 
+
     defaultConfig {
         minSdkVersion rootProject.ext.MIN_SDK_VERSION
         targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
-        versionCode 102
-        versionName '1.0.2'
+        versionCode 118
+        versionName "1.1.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -20,36 +21,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
+//tasks.withType(JavaCompile) {
+//    options.encoding = "UTF-8"
+//}
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
-    implementation rootProject.ext.dependencies.libGlide
-    annotationProcessor rootProject.ext.dependencies.libGlideCompiler
+    implementation "com.android.support:recyclerview-v7:$rootProject.ext.LIB_VERSION"
 }
+
+
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //项目主页
-def siteUrl = 'https://github.com/Daimhim/vision/tree/master/pictureload'    // project homepage
+def siteUrl = 'https://github.com/Daimhim/RVDecoration'    // project homepage
 //项目的版本控制地址
-def gitUrl = 'https://github.com/Daimhim/vision.git' // project git
+def gitUrl = 'https://github.com/Daimhim/RVDecoration.git' // project git
 //项目讨论区
-def gitissues = 'https://github.com/Daimhim/vision/issues' // project issues
+def gitissues = 'https://github.com/Daimhim/RVDecoration/issues' // project issues
 //包名
-group = "org.daimhim.pictureload"
+group = "org.daimhim.rvdecoration"
 //仓库名
-def maven_repo = "widget"
+def maven_repo = "RVDecoration"
 //发布到JCenter上的项目名字，必须填写
-def libName = "pictureload"            //依赖名
+def libName = "rvadapter"            //依赖名
 // 版本号，下次更新是只需要更改版本号即可
 version = android.defaultConfig.versionName
 /**  上面配置后上传至jcenter后的编译路径是这样的： compile 'org.daimhim.rvdecoration:rvadapter:1.0.0'  **/
@@ -67,7 +69,7 @@ task javadoc(type: Javadoc) {
     options.charSet 'UTF-8'
     options.author true
     options.version true
-    options.links "https://github.com/Daimhim/vision/tree/master/pictureload/docs/javadoc"
+    options.links "https://github.com/Daimhim/RVDecoration/tree/master/rvadapter/docs/javadoc"
     failOnError false
 }
 
@@ -81,10 +83,7 @@ task copyDoc(type: Copy) {
     from "${buildDir}/docs/"
     into "docs"
 }
-task copyDocs(type: Copy) {
-    from 'src/main/doc'
-    into 'build/target/doc'
-}
+
 //上传到jcenter所需要的源码文件
 artifacts {
     archives javadocJar
@@ -98,7 +97,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name "ImgLoading Util"
+                name "RecyclerView holp class，specification its adapater"
                 url siteUrl
                 licenses {
                     license {
@@ -133,7 +132,7 @@ bintray {
     pkg {
         repo = maven_repo
         name = libName    //发布到JCenter上的项目名字，必须填写
-        desc =  "ImgLoading Util"   //项目描述
+        desc =  "RecyclerView辅助，规范Adapater"   //项目描述
         websiteUrl = siteUrl
         issueTrackerUrl = gitissues
         vcsUrl = gitUrl
