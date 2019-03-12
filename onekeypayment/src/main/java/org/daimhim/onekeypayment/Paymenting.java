@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 
 import com.alipay.sdk.app.PayTask;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -23,6 +24,7 @@ import org.daimhim.onekeypayment.model.PaymentReponse;
 import org.daimhim.onekeypayment.model.PaymentRequest;
 import org.daimhim.onekeypayment.model.WxPayParameter;
 
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.util.LinkedHashMap;
@@ -51,7 +53,7 @@ import static org.daimhim.onekeypayment.PaymentConst.WX_PAY;
  * Result是指doInBackground()的返回值类型
  */
 class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
-    private PaymentingFragment mFragment;
+    private SoftReference<PaymentingFragment> mFragment;
 
     String TAG = getClass().getSimpleName();
     /**
@@ -59,11 +61,11 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
      */
     public static PayIWXAPIEventHandler sIWXAPIEventHandler;
     @SuppressLint("StaticFieldLeak")
-    private Activity mActivity;
+    private SoftReference<Activity> mActivity;
     private PaymentCallback mPaymentCallback;
 
     public Paymenting(Activity pActivity, PaymentCallback pPaymentCallback) {
-        mActivity = pActivity;
+        mActivity = new SoftReference<>(pActivity);
         mPaymentCallback = pPaymentCallback;
     }
 
@@ -87,12 +89,12 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                         lPayParameter1.setSign(SignUtils.sign(alPayParameter(lPayParameter1, false),
                                 lPayParameter1.getPrivate_key(), true));
                         lPayParameter1.setSignInfo(alPayParameter(lPayParameter1, true));
-                        lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
+                        lPay = new PayTask(mActivity.get()).pay(lPayParameter1.getSignInfo(), true);
                     } else {
-                        lPay = new PayTask(mActivity).pay(lPayParameter1.getSignInfo(), true);
+                        lPay = new PayTask(mActivity.get()).pay(lPayParameter1.getSignInfo(), true);
                     }
                     if (TextUtils.isEmpty(lPay)) {
-                        lReponse.setErrorMessage(mActivity.getString(R.string.unknown_mistake));
+                        lReponse.setErrorMessage(mActivity.get().getString(R.string.unknown_mistake));
                         lReponse.setPayStatus(PAY_UNKNOWN_MISTAKE);
                     } else {
                         lReponse.analysisAL(lPay);
@@ -101,7 +103,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 case WX_PAY:
                     //微信
                     WxPayParameter lPayParameter = (WxPayParameter) lPaymentRequest.getPayParameter();
-                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity, lPayParameter.getAppId(), true);
+                    IWXAPI lWXAPI = WXAPIFactory.createWXAPI(mActivity.get(), lPayParameter.getAppId(), true);
                     lWXAPI.registerApp(lPayParameter.getAppId());
                     if (lWXAPI.isWXAppInstalled()) {
                         PayReq req = new PayReq();
@@ -152,7 +154,7 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                             lReponse.setPayStatus(PAY_FAILURE);
                         }
                     } else {
-                        lReponse.setErrorMessage(mActivity.getString(R.string.wx_not_installed));
+                        lReponse.setErrorMessage(mActivity.get().getString(R.string.wx_not_installed));
                         lReponse.setPayStatus(PAY_WX_NOT_INSTALLED);
                     }
                     break;
@@ -185,7 +187,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                     }
                 }else {
                     Log.d(TAG,"当前是支付宝支付，模式为参数已拼接");
-
                 }
                 break;
             case WX_PAY:
@@ -202,11 +203,9 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
                 md5.put("key", lPayParameter.getApikey());
                 String sign = md5.getMessageDigest(md5.toString().getBytes()).toUpperCase(Locale.CHINA);
                 if (TextUtils.isEmpty(lPayParameter.getPaySign())){
-                    Log.d(TAG,"当前是微信支付，模式为参数自动拼接");
-
+                    Log.d(TAG,"当前是微信支付，模式为参数自动拼接"+sign);
                 }else {
-                    Log.d(TAG,"当前是微信支付，模式为参数已拼接");
-
+                    Log.d(TAG,"当前是微信支付，模式为参数已拼接"+sign);
                 }
                 break;
             default:
@@ -220,10 +219,11 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mFragment = new PaymentingFragment();
-        mActivity.getFragmentManager()
+        mActivity.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mFragment = new SoftReference<>(new PaymentingFragment());
+        mActivity.get().getFragmentManager()
                 .beginTransaction()
-                .add(mFragment, TAG)
+                .add(mFragment.get(), TAG)
                 .commit();
     }
 
@@ -240,10 +240,13 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         } else {
             mPaymentCallback.onPaymentFailure(PaymentConst.PAY_FAILURE);
         }
+        mActivity.get().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void recycling() {
-        mActivity.getFragmentManager().beginTransaction().remove(mFragment).commit();
+        if (null!=mFragment.get()) {
+            mActivity.get().getFragmentManager().beginTransaction().remove(mFragment.get()).commit();
+        }
         mActivity = null;
         mFragment = null;
         sIWXAPIEventHandler = null;
@@ -361,4 +364,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
         lStringBuilder.deleteCharAt(lStringBuilder.length() - 1);
         return lStringBuilder.toString();
     }
+
+
 }
