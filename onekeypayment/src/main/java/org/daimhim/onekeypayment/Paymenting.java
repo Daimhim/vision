@@ -60,7 +60,6 @@ class Paymenting extends AsyncTask<PaymentRequest, Integer, PaymentReponse> {
      * 微信回调接口
      */
     public static PayIWXAPIEventHandler sIWXAPIEventHandler;
-    @SuppressLint("StaticFieldLeak")
     private SoftReference<Activity> mActivity;
     private PaymentCallback mPaymentCallback;
 

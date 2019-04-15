@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.daimhim.afilechooser.ipaulpro.afilechooser.utils.FileUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,12 +69,12 @@ public class SelectFileFragment extends Fragment {
     }
     private void showChooser() {
         // Use the GET_CONTENT intent from the utility class
-        Intent target = FileUtils.createGetContentIntent();
+//        Intent target = FileUtils.createGetContentIntent();
         // Create the chooser Intent
-        Intent intent = Intent.createChooser(
-                target, getString(R.string.chooser_title));
+//        Intent intent = Intent.createChooser(
+//                target, getString(R.string.chooser_title));
         try {
-            startActivityForResult(intent, REQUEST_CODE);
+//            startActivityForResult(intent, REQUEST_CODE);
         } catch (ActivityNotFoundException e) {
             // The reason for the existence of aFileChooser
         }
@@ -93,9 +92,9 @@ public class SelectFileFragment extends Fragment {
                         Log.i(TAG, "Uri = " + uri.toString());
                         try {
                             // Get the file path from the URI
-                            final String path = FileUtils.getPath(getContext(), uri);
-                            Toast.makeText(getContext(),
-                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
+//                            final String path = FileUtils.getPath(getContext(), uri);
+//                            Toast.makeText(getContext(),
+//                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
                             Log.e(TAG, "File select error", e);
                         }
