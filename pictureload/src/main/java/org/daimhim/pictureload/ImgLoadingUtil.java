@@ -1,9 +1,11 @@
 package org.daimhim.pictureload;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
@@ -46,7 +48,7 @@ public class ImgLoadingUtil {
         /**
          * 图片切换的淡入淡出动画，时间默认为300，可以手动修改
          */
-        private int crossFadeTime = 300;
+        private int crossFadeTime = 0;
         /**
          * 不进行缓存
          */
@@ -106,6 +108,11 @@ public class ImgLoadingUtil {
         ImageLoadConfig defaultConfig = getDefaultConfig();
         defaultConfig.setPlaysholder(placeHolder);
         defaultConfig.setErrorHolder(errorHolder);
+        loadImage(defaultConfig, iv, url);
+    }
+    public static void loadImage(ImageView iv, Object url, @DrawableRes int placeHolder) {
+        ImageLoadConfig defaultConfig = getDefaultConfig();
+        defaultConfig.setPlaysholder(placeHolder);
         loadImage(defaultConfig, iv, url);
     }
 
