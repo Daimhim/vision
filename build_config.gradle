@@ -1,7 +1,7 @@
 //Support
-def SupportVersion = "27.1.0"
+def SupportVersion = "28.0.0"
 
-def ConstraintLayoutVersion = "1.1.0"
+def ConstraintLayoutVersion = "1.1.3"
 
 // Retrofit
 def RetrofitVersion = "2.4.0"
@@ -16,7 +16,7 @@ def LeakCanaryVersion = "1.6.2"
 def RxJavaVersion = '2.2.0-SNAPSHOT'
 
 // RxAndroid
-def RxAndroidVersion = '2.0.2'
+def RxAndroidVersion = '2.1.0'
 
 // GreenDao
 def GreenDaoVersion = "3.2.2"
@@ -49,13 +49,13 @@ def MultiDexVersion = "1.0.2"
 def OneKeyPaymentVersion = "1.0.3"
 
 //RvAdapter
-def RvAdapterVersion = "1.1.2"
+def RvAdapterVersion = "1.2.0_Beta-9"
 
 //Used
 def UsedVersion = "1.0.5-alpha-1"
 
 //Banner
-def BannerVersion = "1.0.2"
+def BannerVersion = "1.0.3"
 
 //Widget
 def WidgetVersion = "1.0.2"
@@ -68,6 +68,9 @@ def PictureLoadVersion = "1.0.0"
 
 //ErrorCollection
 def ErrorCollectionVersion = "1.0.2"
+
+//RvDecoration
+def RvDecorationVersion = "1.0.1"
 
 //Junit
 def JunitVersion = "4.12"
@@ -84,6 +87,12 @@ def TimberVersion = "4.7.1"
 //Paging
 def PagingVersion = "1.0.1"
 
+//GetPhoto
+def GetPhotoVersion = "1.0"
+
+//Glide
+def GlideVersion = "4.9.0"
+
 def buildDate() {
     def date = new Date()
     def formattedDate = date.format('yyyyMMddHHmmss')
@@ -94,8 +103,8 @@ ext {
     android = [
             compileSdkVersion: 28,
             buildToolsVersion: "28.0.3",
-            minSdkVersion    : 16,
-            targetSdkVersion : 23,
+            minSdkVersion    : 19,
+            targetSdkVersion : 21,
             greenDaoDBVersion: 1,
     ]
 
@@ -182,7 +191,12 @@ ext {
             libRvAdapter               : "org.daimhim.rvdecoration:rvadapter:${RvAdapterVersion}",
             libPictureLoad             : "org.daimhim.pictureload:pictureload:${PictureLoadVersion}",
             libErrorCollection         : "org.daimhim.errorcollection:errorcollection:${ErrorCollectionVersion}",
+            libRvDecoration            : "org.daimhim.rvdecoration:rvdecoration:${RvDecorationVersion}",
+            libGetPhoto            : "org.daimhim.widget:getphoto:${GetPhotoVersion}",
 
+            //https://github.com/bumptech/glide
+            libGlide                   : "com.github.bumptech.glide:glide:${GlideVersion}",
+            libGlideCompiler           : "com.github.bumptech.glide:compiler:${GlideVersion}",
             //org.jetbrains:annotations-java5:15.0
             libAnnotationsJava5        : "org.jetbrains:annotations-java5:${AnnotationsJavaVersion}",
     ]
@@ -199,6 +213,8 @@ ext {
     ]
 }
 
+//implementation rootProject.ext.dependencies.libRxJava
+//implementation rootProject.ext.dependencies.libRxAndroid
 //implementation rootProject.ext.dependencies.libTimber
 //implementation rootProject.ext.dependencies.libAppCompatV7
 //implementation rootProject.ext.dependencies.libRecyclerViewV7

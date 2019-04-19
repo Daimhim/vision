@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
  *
  * @author：Daimhim
  */
+@Deprecated
 public class ImgLoadingUtil {
 
     public static ImageLoadConfig getDefaultConfig() {

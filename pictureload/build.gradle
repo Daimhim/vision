@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.MIN_SDK_VERSION
         targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
-        versionCode 102
-        versionName '1.0.2'
+        versionCode 103
+        versionName '1.0.3'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -26,10 +26,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    testImplementation rootProject.ext.dependencies.libJunit
+    androidTestImplementation rootProject.ext.dependencies.libRunner
+    androidTestImplementation rootProject.ext.dependencies.libEspressoCore
 
+    implementation rootProject.ext.dependencies.libTimber
     implementation rootProject.ext.dependencies.libGlide
     annotationProcessor rootProject.ext.dependencies.libGlideCompiler
 }
